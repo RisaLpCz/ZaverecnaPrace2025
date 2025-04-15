@@ -1,18 +1,22 @@
 package view;
 
+import controller.Controller;
+import controller.Settings;
 import object.Ball;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
-public class Painter extends JFrame {
+public class Painter extends JPanel {
 
-    public Painter() throws HeadlessException {
-        setTitle("PadajiciKoule");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1080, 1920);
-        setLocationRelativeTo(null);
-        setVisible(true);
-    }
-    
+    @Override
+    protected void paintComponent(Graphics graphics) {
+         super.paintComponent(graphics);
+
+         for (Ball ball : Controller.ballList) {
+             graphics.setColor(Color.CYAN);
+             graphics.fillOval((int) ball.getX(), (int) ball.getY(), ball.getRadius(), ball.getRadius());
+         }
+     }
 }
