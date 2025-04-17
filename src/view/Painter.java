@@ -12,11 +12,37 @@ public class Painter extends JPanel {
 
     @Override
     protected void paintComponent(Graphics graphics) {
-         super.paintComponent(graphics);
+        super.paintComponent(graphics);
 
-         for (Ball ball : Controller.ballList) {
-             graphics.setColor(Color.CYAN);
-             graphics.fillOval((int) ball.getX(), (int) ball.getY(), ball.getRadius(), ball.getRadius());
-         }
-     }
+        for (Ball ball : Controller.ballList) {
+            graphics.setColor(Color.CYAN);
+            graphics.fillOval(
+                    (int) ball.getX() - ball.getRadius(),
+                    (int) ball.getY() - ball.getRadius(),
+                    ball.getRadius() * 2,
+                    ball.getRadius() * 2);
+
+
+            graphics.setColor(Color.RED);
+            graphics.setColor(Color.BLUE);
+            graphics.fillOval((int) ball.getX(), (int) ball.getY(), 4, 4);
+
+            // Vykreslení kolizní oblasti
+            graphics.setColor(Color.RED);
+            int diameter = (int) (ball.getRadius() * 2);
+            graphics.drawOval(
+                    (int) (ball.getX() - ball.getRadius()),
+                    (int) (ball.getY() - ball.getRadius()),
+                    diameter,
+                    diameter
+            );
+
+            graphics.setColor(Color.BLACK);
+            graphics.drawLine(528, 0, 528, 1080);
+
+            graphics.setColor(Color.ORANGE);
+            graphics.drawLine(585, 0, 585, 1080);
+
+        }
+    }
 }

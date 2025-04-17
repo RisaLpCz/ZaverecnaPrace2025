@@ -12,18 +12,18 @@ public class Ball {
     //private final Song song;
 
 
-    public Ball(String name, int radius, double x, double y, double velocityX, double velocityY) {
+    public Ball(String name, int radius, double x, double y) {
         this.name = name;
         this.radius = radius;
         this.x = x;
         this.y = y;
-        this.velocityX = velocityX;
-        this.velocityY = velocityY;
+        this.velocityX = 0.5;
+        this.velocityY = -5;
     }
 
     public void move() {
         x += velocityX;
-        y += velocityY;
+        //y += velocityY;
     }
 
     public String getName() {
