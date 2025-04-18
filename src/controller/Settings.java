@@ -5,6 +5,14 @@ public class Settings {
     public static final int WINDOW_WIDTH = 585;
     public static final int WINDOW_HEIGHT = 1080;
 
+    public static final int BALL_RADIUS = 40;
+    public static final int BALL_NUMBER = 10;
+
+
+    //pokud budu delat graficke nastavnovani s listou muze se hodit
+    //tim padem pak zmenit datovy typ v spawn generatoru (step a radius)
+    //public static final double BALL_RADIUS = 40;
+
 
 
     public static final int INTERVAL_CASOVACE = 20;

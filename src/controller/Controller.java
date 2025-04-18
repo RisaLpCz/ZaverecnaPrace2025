@@ -19,26 +19,15 @@ public class Controller {
 
     static  {
         Random random = new Random();
-        int ballNumber = 1;
-        int ballRadius = 40;
+        BallsSpawnGenerator spawnGenerator = new BallsSpawnGenerator();
+        int ballNumber = Settings.BALL_NUMBER;
+        int ballRadius = Settings.BALL_RADIUS;
 
-        double[] ballPositonsX;
-        double[] ballPositonsY;
-
-        for (int i = 0; i < ballNumber; i++) {
-            double randomPostionX = random.nextDouble();
-            double randomPostionY = random.nextDouble();
-
-            //pridat algoritmus na nahodne generovani pozic ballu
-            /* if (randomPostionX ) {
-                ballPositonsX[i] = randomPostionX;
-            }
-             */
-        }
 
         for (int i = 0; i < ballNumber; i++) {
+            spawnGenerator.run();
             //random.nextInt(Settings.WINDOW_WIDTH - (ballRadius * 2)
-            ballList.add(new Ball("", ballRadius, Settings.WINDOW_WIDTH - 100, random.nextInt(190) + 10));
+            ballList.add(new Ball("", ballRadius, BallsSpawnGenerator.getX(), BallsSpawnGenerator.getY()));
         }
     }
 
