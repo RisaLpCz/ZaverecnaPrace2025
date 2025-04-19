@@ -18,12 +18,12 @@ public class Ball {
         this.x = x;
         this.y = y;
         this.velocityX = 0.5;
-        this.velocityY = -5;
+        this.velocityY = 2;
     }
 
     public void move() {
         x += velocityX;
-        //y += velocityY;
+        y += velocityY;
     }
 
     public String getName() {

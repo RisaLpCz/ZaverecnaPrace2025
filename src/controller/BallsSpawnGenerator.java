@@ -4,8 +4,11 @@ import java.util.*;
 
 public class BallsSpawnGenerator {
 
+    //doplnit kruhovy spawner
+
     private static double x;
     private static double y;
+    static int pocetNenakreselnych = 0;
 
     private static final int WIDTH = Settings.WINDOW_WIDTH;
     private static final int HEIGHT = Settings.WINDOW_HEIGHT;
@@ -13,36 +16,28 @@ public class BallsSpawnGenerator {
     private static final int STEP = 1;
 
     private HashSet<Point> freePoints;
-    private HashSet<Point> usedPoints;
     private Random random = new Random();
 
-    public void run() {
-        generateFreePoints();  // 1. krok: připravíme všechny legální body
-        usedPoints = new HashSet<>();
+    public BallsSpawnGenerator() {
+        generateFreePoints();
+    }
 
+    public void run() {
         if (!freePoints.isEmpty()) {
-            // Vyber náhodný bod
-            int randomIndex = random.nextInt(freePoints.size());
-            Point randomPoint = freePoints.stream().skip(randomIndex).findFirst().orElse(null);
-            if (randomPoint == null) {
-                //pirdat exception
-                System.out.println("Cannot find a spot for a ball! Please decrase the radius or number of balls");
-            }
-            usedPoints.add(randomPoint);
-            //pirdat podminku ze randomPoint != null
+            int index = random.nextInt(freePoints.size());
+            //Point randomPoint = freePoints.stream().skip(index).findFirst().orElse(null); //pokud bude program bezet na vice vlaknech (zatim nepotrebuji)
+            Point randomPoint = freePoints.stream().skip(index).findFirst().orElseThrow(IllegalStateException::new);
+
             setX(randomPoint.x);
             setY(randomPoint.y);
 
-            // Eliminace bodů, které jsou příliš blízko (méně než 2xRADIUS od nového kruhu)
             updateUnuseablePoints(randomPoint);
-        }
-        else {
-            //udelat podminku
-            System.out.println("Cannot find a spot for a ball! Please decrase the radius or number of balls");
+        } else {
+            pocetNenakreselnych++;
+            System.out.println("Žádné volné místo pro další kruh. Sniž počet nebo poloměr.");
         }
     }
 
-    // Předem vyřadí body u hranic, aby se celý kruh vešel do prostoru
     private void generateFreePoints() {
         freePoints = new HashSet<>();
 
@@ -53,9 +48,9 @@ public class BallsSpawnGenerator {
         }
     }
 
-    // Odstraní všechny body, které by byly uvnitř existujícího kruhu nebo by způsobily překryv
     private void updateUnuseablePoints(Point centerPoint) {
         HashSet<Point> toRemove = new HashSet<>();
+
         for (Point point : freePoints) {
             if (centerPoint.distanceTo(point) < 2 * RADIUS) {
                 toRemove.add(point);
@@ -64,20 +59,20 @@ public class BallsSpawnGenerator {
         freePoints.removeAll(toRemove);
     }
 
-    public static double getY() {
-        return y;
-    }
-
-    public static void setY(double y) {
-        BallsSpawnGenerator.y = y;
-    }
-
     public static double getX() {
         return x;
     }
 
     public static void setX(double x) {
         BallsSpawnGenerator.x = x;
+    }
+
+    public static double getY() {
+        return y;
+    }
+
+    public static void setY(double y) {
+        BallsSpawnGenerator.y = y;
     }
 
     private static class Point {
@@ -102,6 +97,11 @@ public class BallsSpawnGenerator {
         @Override
         public int hashCode() {
             return Double.hashCode(x) * 31 + Double.hashCode(y);
+        }
+
+        @Override
+        public String toString() {
+            return "x: " + x + " y: " + y;
         }
     }
 }

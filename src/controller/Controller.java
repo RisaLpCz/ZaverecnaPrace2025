@@ -17,7 +17,7 @@ public class Controller {
         checkCollision();
     }
 
-    static  {
+    static {
         Random random = new Random();
         BallsSpawnGenerator spawnGenerator = new BallsSpawnGenerator();
         int ballNumber = Settings.BALL_NUMBER;
@@ -26,14 +26,19 @@ public class Controller {
 
         for (int i = 0; i < ballNumber; i++) {
             spawnGenerator.run();
+            if (BallsSpawnGenerator.getX() == 0 && BallsSpawnGenerator.getY() == 0) {
+                System.out.println("Už nelze vložit další míč, prostor je plný!");
+                break;
+            }
             //random.nextInt(Settings.WINDOW_WIDTH - (ballRadius * 2)
             ballList.add(new Ball("", ballRadius, BallsSpawnGenerator.getX(), BallsSpawnGenerator.getY()));
         }
+        System.out.println("Pocet nenakreslenych kruhu: " + BallsSpawnGenerator.pocetNenakreselnych);
     }
 
     private static void moveBalls() {
         for (Ball ball : ballList) {
-                ball.move();
+            ball.move();
         }
     }
 
@@ -45,35 +50,26 @@ public class Controller {
             double ballRadius = ball.getRadius();
             double ballVelocityX = ball.getVelocityX();
             double ballVelocityY = ball.getVelocityY();
-            double ballDiameter = ballRadius * 2;
 
-            if (ballY + (ballDiameter) >= Settings.WINDOW_HEIGHT) {  // Podmínka pro dolní hranu
-                ball.setY(Settings.WINDOW_HEIGHT - ballDiameter);  // Zarovná balíček na spodní hranu
-                ball.setVelocityY(-ballVelocityY * Settings.ODRAZIVOST);
+            if (ballY + ballRadius >= Settings.WINDOW_HEIGHT) {
+                ball.setY(Settings.WINDOW_HEIGHT - ballRadius);
+                ball.setVelocityY(-ballVelocityY);
             }
 
-
-            // Kolize s horní hranou - upraveno
             if (ballY - ballRadius <= 0) {
-                ball.setY(ballRadius); // Nastavíme horní hranu míče na 0 (zarovnání)
-                ball.setVelocityY(-ballVelocityY * Settings.ODRAZIVOST);
+                ball.setY(ballRadius);
+                ball.setVelocityY(-ballVelocityY);
             }
 
-
-            // Kolize s levou hranou - upraveno pro přesnou pozici
             if (ballX - ballRadius <= 0) {
-                ball.setX(ballRadius);  // nastavíme míč přesně na hranu
-                ball.setVelocityX(-ballVelocityX * Settings.ODRAZIVOST);
+                ball.setX(ballRadius);
+                ball.setVelocityX(-ballVelocityX);
             }
 
-            // Kolize s pravou hranou
+
             if (ballX + ballRadius >= Settings.WINDOW_WIDTH) {
-                System.out.println("X: " + ballX + " radius " +  ballRadius + " dohromady: " + (ballX + ballRadius) + " a sirka okna: " + Settings.WINDOW_WIDTH);
                 ball.setX(Settings.WINDOW_WIDTH - ballRadius);
-                //ball.setX(Settings.WINDOW_WIDTH - ballRadius - (ballRadius / 2) + 3);  // nastavíme míč přesně na hranu
-                ball.setVelocityX(0);
-                System.out.println("nejpravejsi bod je na souradnici: " + (ballX + ballRadius));
-                //ball.setVelocityX(-ballVelocityX * Settings.ODRAZIVOST);
+                ball.setVelocityX(-ballVelocityX);
             }
 
         }
@@ -83,50 +79,43 @@ public class Controller {
                 Ball ball1 = ballList.get(i);
                 Ball ball2 = ballList.get(j);
 
-                // Výpočet vzdálenosti mezi středy míčů
-                double dx = ball2.getX() - ball1.getX();
-                double dy = ball2.getY() - ball1.getY();
-                double distance = Math.sqrt(dx * dx + dy * dy);
+                double deltaX = ball2.getX() - ball1.getX();
+                double deltaY = ball2.getY() - ball1.getY();
+                double distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-                // Součet poloměrů
                 double sumRadius = ball1.getRadius() + ball2.getRadius();
 
-                // Kontrola, zda došlo ke kolizi - přidána tolerance
-                if (Math.abs(distance - sumRadius) < 1) {  // Kolize nastane pouze když se míče skutečně dotknou
-                    // Normalizované vektory směru
-                    double nx = dx / distance;
-                    double ny = dy / distance;
-
-                    // Relativní rychlost
-                    double vx = ball2.getVelocityX() - ball1.getVelocityX();
-                    double vy = ball2.getVelocityY() - ball1.getVelocityY();
-
-                    // Výpočet impulzu
-                    double impulsScale = (vx * nx + vy * ny) * Settings.ODRAZIVOST;
-
-                    // Aplikace impulzu pouze pokud se míče přibližují
-                    if (impulsScale < 0) {
-                        ball1.setVelocityX(ball1.getVelocityX() + nx * impulsScale);
-                        ball1.setVelocityY(ball1.getVelocityY() + ny * impulsScale);
-                        ball2.setVelocityX(ball2.getVelocityX() - nx * impulsScale);
-                        ball2.setVelocityY(ball2.getVelocityY() - ny * impulsScale);
-
-                        // Minimální korekce pozic
-                        double overlap = sumRadius - distance;
-                        if (overlap > 0) {
-                            double moveX = (overlap * nx) / 2;
-                            double moveY = (overlap * ny) / 2;
-
-                            ball1.setX(ball1.getX() - moveX);
-                            ball1.setY(ball1.getY() - moveY);
-                            ball2.setX(ball2.getX() + moveX);
-                            ball2.setY(ball2.getY() + moveY);
-                        }
+                if (distance < sumRadius) {
+                    if (distance == 0) {
+                        distance = 0.01;
+                        deltaX = 0.01;
+                        deltaY = 0;
                     }
+
+                    double noramliX = deltaX / distance;
+                    double normaliY = deltaY / distance;
+
+                    double relativeVelocityX = ball2.getVelocityX() - ball1.getVelocityX();
+                    double relativePositionX = ball2.getVelocityY() - ball1.getVelocityY();
+
+                    double impactSpeed = relativeVelocityX * noramliX + relativePositionX * normaliY;
+
+                    if (impactSpeed < 0) {
+                        double impulse = impactSpeed * Settings.ODRAZIVOST;
+
+                        ball1.setVelocityX(ball1.getVelocityX() + noramliX * impulse);
+                        ball1.setVelocityY(ball1.getVelocityY() + normaliY * impulse);
+                        ball2.setVelocityX(ball2.getVelocityX() - noramliX * impulse);
+                        ball2.setVelocityY(ball2.getVelocityY() - normaliY * impulse);
+                    }
+
+                    double overlap = 0.5 * (sumRadius - distance);
+                    ball1.setX(ball1.getX() - overlap * noramliX);
+                    ball1.setY(ball1.getY() - overlap * normaliY);
+                    ball2.setX(ball2.getX() + overlap * noramliX);
+                    ball2.setY(ball2.getY() + overlap * normaliY);
                 }
             }
         }
     }
-
-
 }

@@ -3,6 +3,7 @@ import controller.Settings;
 import view.Painter;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -10,10 +11,19 @@ public class Main {
     public static void main(String[] args) {
         JFrame window = new JFrame("PadajiciKoule");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setSize(Settings.WINDOW_WIDTH, Settings.WINDOW_HEIGHT);
-        window.setLocationRelativeTo(null);
+        //window.setLocationRelativeTo(null);
         window.setAlwaysOnTop(true);
-        window.add(new Painter());
+
+        Painter painter = new Painter();
+        painter.setPreferredSize(new Dimension(Settings.WINDOW_WIDTH, Settings.WINDOW_HEIGHT));
+        window.add(painter);
+        window.pack();
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (screenSize.width - window.getWidth()) / 2;
+        int y = 0;
+        window.setLocation(x, y);
+
         window.setVisible(true);
 
 

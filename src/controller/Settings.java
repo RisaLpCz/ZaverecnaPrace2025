@@ -3,10 +3,10 @@ package controller;
 public class Settings {
     public static final double GRAVITACNIKONSTANTA = 9.81;
     public static final int WINDOW_WIDTH = 585;
-    public static final int WINDOW_HEIGHT = 1080;
+    public static final int WINDOW_HEIGHT = 1000;
 
     public static final int BALL_RADIUS = 40;
-    public static final int BALL_NUMBER = 10;
+    public static final int BALL_NUMBER = 75;
 
 
     //pokud budu delat graficke nastavnovani s listou muze se hodit
