@@ -6,7 +6,7 @@ public class Settings {
     public static final int WINDOW_HEIGHT = 1000;
 
     public static final int BALL_RADIUS = 40;
-    public static final int BALL_NUMBER = 75;
+    public static final int BALL_NUMBER = 3;
 
 
     //pokud budu delat graficke nastavnovani s listou muze se hodit

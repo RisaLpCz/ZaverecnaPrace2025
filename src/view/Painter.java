@@ -23,10 +23,6 @@ public class Painter extends JPanel {
                     ball.getRadius() * 2);
 
 
-            graphics.setColor(Color.RED);
-            graphics.setColor(Color.BLUE);
-            graphics.fillOval((int) ball.getX(), (int) ball.getY(), 4, 4);
-
             // Vykreslení kolizní oblasti
             graphics.setColor(Color.RED);
             int diameter = (ball.getRadius() * 2);

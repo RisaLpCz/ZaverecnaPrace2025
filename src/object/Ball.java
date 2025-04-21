@@ -7,7 +7,7 @@ public class Ball {
     private double y;
     private double velocityX;
     private double velocityY;
-    //private long casDopadu;
+    private long lastUpdateTime;
     //private final Picture picture;
     //private final Song song;
 
@@ -19,6 +19,7 @@ public class Ball {
         this.y = y;
         this.velocityX = 0.5;
         this.velocityY = 2;
+        setLastUpdateTime(System.currentTimeMillis());
     }
 
     public void move() {
@@ -68,5 +69,13 @@ public class Ball {
 
     public void setVelocityY(double velocityY) {
         this.velocityY = velocityY;
+    }
+
+    public long getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    public void setLastUpdateTime(long lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
     }
 }

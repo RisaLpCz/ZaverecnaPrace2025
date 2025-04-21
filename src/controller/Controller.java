@@ -1,23 +1,21 @@
 package controller;
 
 import object.Ball;
-import view.Painter;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Set;
 
 public class Controller {
 
     public static ArrayList<Ball> ballList = new ArrayList<>();
 
-
     public static void startTime() {
+        countGravity();
         moveBalls();
         checkCollision();
     }
 
-    static {
+    public static void generateBalls() {
         Random random = new Random();
         BallsSpawnGenerator spawnGenerator = new BallsSpawnGenerator();
         int ballNumber = Settings.BALL_NUMBER;
@@ -25,15 +23,15 @@ public class Controller {
 
 
         for (int i = 0; i < ballNumber; i++) {
-            spawnGenerator.run();
-            if (BallsSpawnGenerator.getX() == 0 && BallsSpawnGenerator.getY() == 0) {
-                System.out.println("Už nelze vložit další míč, prostor je plný!");
+            boolean spawnBall = spawnGenerator.run();
+
+            if (spawnBall) {
+                ballList.add(new Ball("", ballRadius, BallsSpawnGenerator.getX(), BallsSpawnGenerator.getY()));
+            } else {
                 break;
             }
-            //random.nextInt(Settings.WINDOW_WIDTH - (ballRadius * 2)
-            ballList.add(new Ball("", ballRadius, BallsSpawnGenerator.getX(), BallsSpawnGenerator.getY()));
         }
-        System.out.println("Pocet nenakreslenych kruhu: " + BallsSpawnGenerator.pocetNenakreselnych);
+        System.out.println("Pocet nenakreslenych kruhu: " + (Settings.BALL_NUMBER - ballList.size()));
     }
 
     private static void moveBalls() {
@@ -65,7 +63,6 @@ public class Controller {
                 ball.setX(ballRadius);
                 ball.setVelocityX(-ballVelocityX);
             }
-
 
             if (ballX + ballRadius >= Settings.WINDOW_WIDTH) {
                 ball.setX(Settings.WINDOW_WIDTH - ballRadius);
@@ -116,6 +113,19 @@ public class Controller {
                     ball2.setY(ball2.getY() + overlap * normaliY);
                 }
             }
+        }
+    }
+
+    private static void countGravity() {
+        for (Ball ball : ballList) {
+            double velocityY = ball.getVelocityY();
+            long lastUpdateTime = ball.getLastUpdateTime();
+
+            double timeElapsed = (System.currentTimeMillis() - lastUpdateTime) / 1000.0;
+            double newVelocityY = velocityY + Settings.GRAVITACNIKONSTANTA * timeElapsed;
+
+            ball.setVelocityY(newVelocityY);
+            ball.setLastUpdateTime(System.currentTimeMillis());
         }
     }
 }

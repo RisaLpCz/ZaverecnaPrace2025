@@ -28,6 +28,7 @@ public class Main {
 
 
 
+        Controller.generateBalls();
 
         Timer timer = new Timer(16, new ActionListener() {
             @Override

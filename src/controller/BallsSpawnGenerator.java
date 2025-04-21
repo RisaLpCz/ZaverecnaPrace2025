@@ -8,10 +8,9 @@ public class BallsSpawnGenerator {
 
     private static double x;
     private static double y;
-    static int pocetNenakreselnych = 0;
 
     private static final int WIDTH = Settings.WINDOW_WIDTH;
-    private static final int HEIGHT = Settings.WINDOW_HEIGHT;
+    private static final int HEIGHT = Settings.WINDOW_HEIGHT - 600;
     private static final int RADIUS = Settings.BALL_RADIUS;
     private static final int STEP = 1;
 
@@ -22,7 +21,7 @@ public class BallsSpawnGenerator {
         generateFreePoints();
     }
 
-    public void run() {
+    public boolean run() {
         if (!freePoints.isEmpty()) {
             int index = random.nextInt(freePoints.size());
             //Point randomPoint = freePoints.stream().skip(index).findFirst().orElse(null); //pokud bude program bezet na vice vlaknech (zatim nepotrebuji)
@@ -32,9 +31,11 @@ public class BallsSpawnGenerator {
             setY(randomPoint.y);
 
             updateUnuseablePoints(randomPoint);
+            return true;
         } else {
-            pocetNenakreselnych++;
+            //vyjimka
             System.out.println("Žádné volné místo pro další kruh. Sniž počet nebo poloměr.");
+            return false;
         }
     }
 
