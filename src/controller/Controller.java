@@ -13,6 +13,7 @@ public class Controller {
         countGravity();
         moveBalls();
         checkCollision();
+        updateCamera();
     }
 
     public static void generateBalls() {
@@ -49,8 +50,8 @@ public class Controller {
             double ballVelocityX = ball.getVelocityX();
             double ballVelocityY = ball.getVelocityY();
 
-            if (ballY + ballRadius >= Settings.WINDOW_HEIGHT) {
-                ball.setY(Settings.WINDOW_HEIGHT - ballRadius);
+            if (ballY + ballRadius >= Settings.WORLD_HEIGHT) {
+                ball.setY(Settings.WORLD_HEIGHT - ballRadius);
                 ball.setVelocityY(-ballVelocityY * Settings.DISCOURAGEMENT);
             }
 
@@ -64,8 +65,8 @@ public class Controller {
                 ball.setVelocityX(-ballVelocityX * Settings.DISCOURAGEMENT);
             }
 
-            if (ballX + ballRadius >= Settings.WINDOW_WIDTH) {
-                ball.setX(Settings.WINDOW_WIDTH - ballRadius);
+            if (ballX + ballRadius >= Settings.WORLD_WIDTH) {
+                ball.setX(Settings.WORLD_WIDTH - ballRadius);
                 ball.setVelocityX(-ballVelocityX * Settings.DISCOURAGEMENT);
             }
 
@@ -128,4 +129,25 @@ public class Controller {
             ball.setLastUpdateTime(System.currentTimeMillis());
         }
     }
+
+    private static void updateCamera() {
+        double lowestBallY = 0;
+
+        for (Ball ball : ballList) {
+            double ballBottom = ball.getY() + ball.getRadius();
+            if (ballBottom > lowestBallY) {
+                lowestBallY = ballBottom;
+            }
+        }
+
+        Settings.cameraOffsetY = lowestBallY - (Settings.WINDOW_HEIGHT / 2);
+
+        if (Settings.cameraOffsetY < 0) {
+            Settings.cameraOffsetY = 0;
+        }
+        if (Settings.cameraOffsetY > Settings.WORLD_HEIGHT - Settings.WINDOW_HEIGHT) {
+            Settings.cameraOffsetY = Settings.WORLD_HEIGHT - Settings.WINDOW_HEIGHT;
+        }
+    }
+
 }

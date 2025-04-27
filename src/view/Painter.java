@@ -17,8 +17,8 @@ public class Painter extends JPanel {
         for (Ball ball : Controller.ballList) {
             graphics.setColor(Color.CYAN);
             graphics.fillOval(
-                    (int) ball.getX() - ball.getRadius(),
-                    (int) ball.getY() - ball.getRadius(),
+                    (int) (ball.getX() - ball.getRadius()),
+                    (int) (ball.getY() - ball.getRadius() - Settings.cameraOffsetY),
                     ball.getRadius() * 2,
                     ball.getRadius() * 2);
 
@@ -27,7 +27,7 @@ public class Painter extends JPanel {
             int diameter = (ball.getRadius() * 2);
             graphics.drawOval(
                     (int) (ball.getX() - ball.getRadius()),
-                    (int) (ball.getY() - ball.getRadius()),
+                    (int) (ball.getY() - ball.getRadius() - Settings.cameraOffsetY),
                     diameter,
                     diameter
             );

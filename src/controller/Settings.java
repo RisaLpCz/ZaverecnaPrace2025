@@ -4,7 +4,10 @@ public class Settings {
     public static final double GRAVITACNIKONSTANTA = 9.81;
     public static final int WINDOW_WIDTH = 585;
     public static final int WINDOW_HEIGHT = 1000;
-    public static int CAMERAOFFSETY = 1500;
+    public final static int WORLD_HEIGHT = 1500;
+    public final static int WORLD_WIDTH = WINDOW_WIDTH;
+
+    public static double cameraOffsetY = 0;
 
 
     public static final int BALL_RADIUS = 40;
