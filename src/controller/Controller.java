@@ -51,22 +51,22 @@ public class Controller {
 
             if (ballY + ballRadius >= Settings.WINDOW_HEIGHT) {
                 ball.setY(Settings.WINDOW_HEIGHT - ballRadius);
-                ball.setVelocityY(-ballVelocityY);
+                ball.setVelocityY(-ballVelocityY * Settings.DISCOURAGEMENT);
             }
 
             if (ballY - ballRadius <= 0) {
                 ball.setY(ballRadius);
-                ball.setVelocityY(-ballVelocityY);
+                ball.setVelocityY(-ballVelocityY * Settings.DISCOURAGEMENT);
             }
 
             if (ballX - ballRadius <= 0) {
                 ball.setX(ballRadius);
-                ball.setVelocityX(-ballVelocityX);
+                ball.setVelocityX(-ballVelocityX * Settings.DISCOURAGEMENT);
             }
 
             if (ballX + ballRadius >= Settings.WINDOW_WIDTH) {
                 ball.setX(Settings.WINDOW_WIDTH - ballRadius);
-                ball.setVelocityX(-ballVelocityX);
+                ball.setVelocityX(-ballVelocityX * Settings.DISCOURAGEMENT);
             }
 
         }
@@ -98,7 +98,7 @@ public class Controller {
                     double impactSpeed = relativeVelocityX * noramliX + relativePositionX * normaliY;
 
                     if (impactSpeed < 0) {
-                        double impulse = impactSpeed * Settings.ODRAZIVOST;
+                        double impulse = impactSpeed * Settings.BALL_DISCOURAGEMENT;
 
                         ball1.setVelocityX(ball1.getVelocityX() + noramliX * impulse);
                         ball1.setVelocityY(ball1.getVelocityY() + normaliY * impulse);
