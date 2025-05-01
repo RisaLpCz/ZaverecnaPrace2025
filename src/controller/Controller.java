@@ -16,6 +16,14 @@ public class Controller {
         updateCamera();
     }
 
+    public static void napis585(int cislo) {
+        for (int i = 1; i < cislo; i++) {
+            if ((cislo + 10) % i == 0) {
+                System.out.println(i);
+            }
+        }
+    }
+
     public static void generateBalls() {
         Random random = new Random();
         BallsSpawnGenerator spawnGenerator = new BallsSpawnGenerator();
@@ -50,8 +58,8 @@ public class Controller {
             double ballVelocityX = ball.getVelocityX();
             double ballVelocityY = ball.getVelocityY();
 
-            if (ballY + ballRadius >= Settings.WORLD_HEIGHT) {
-                ball.setY(Settings.WORLD_HEIGHT - ballRadius);
+            if (ballY + ballRadius >= Settings.WORLD_HEIGHT + 100) {
+                ball.setY(Settings.WORLD_HEIGHT - ballRadius + 100);
                 ball.setVelocityY(-ballVelocityY * Settings.DISCOURAGEMENT);
             }
 
@@ -145,9 +153,12 @@ public class Controller {
         if (Settings.cameraOffsetY < 0) {
             Settings.cameraOffsetY = 0;
         }
-        if (Settings.cameraOffsetY > Settings.WORLD_HEIGHT - Settings.WINDOW_HEIGHT) {
-            Settings.cameraOffsetY = Settings.WORLD_HEIGHT - Settings.WINDOW_HEIGHT;
+
+        double maxOffset = Settings.WORLD_HEIGHT - Settings.WINDOW_HEIGHT + 100;
+        if (Settings.cameraOffsetY > maxOffset) {
+            Settings.cameraOffsetY = maxOffset;
         }
     }
+
 
 }

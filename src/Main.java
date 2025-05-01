@@ -13,6 +13,7 @@ public class Main {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //window.setLocationRelativeTo(null);
         window.setAlwaysOnTop(true);
+        window.setResizable(false);
 
         Painter painter = new Painter();
         painter.setPreferredSize(new Dimension(Settings.WINDOW_WIDTH, Settings.WINDOW_HEIGHT));
@@ -29,6 +30,7 @@ public class Main {
 
 
         Controller.generateBalls();
+        Controller.napis585(570);
 
         Timer timer = new Timer(16, new ActionListener() {
             @Override
