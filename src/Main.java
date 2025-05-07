@@ -27,10 +27,7 @@ public class Main {
 
         window.setVisible(true);
 
-
-
-        Controller.generateBalls();
-        Controller.napis585(570);
+        Controller.initialization();
 
         Timer timer = new Timer(16, new ActionListener() {
             @Override

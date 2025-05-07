@@ -1,27 +1,29 @@
 package controller;
 
 import object.Ball;
+import object.TriangleObstacle;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Controller {
 
-    public static ArrayList<Ball> ballList = new ArrayList<>();
+    public static ArrayList<Ball> ballList;
+    public static ArrayList<TriangleObstacle> triangles;
+
+
+    public static void initialization() {
+        ballList = new ArrayList<>();
+        triangles = new ArrayList<>();
+        generateBalls();
+        createTriangles(3);
+    }
 
     public static void startTime() {
         countGravity();
         moveBalls();
         checkCollision();
         updateCamera();
-    }
-
-    public static void napis585(int cislo) {
-        for (int i = 1; i < cislo; i++) {
-            if ((cislo + 10) % i == 0) {
-                System.out.println(i);
-            }
-        }
     }
 
     public static void generateBalls() {
@@ -58,8 +60,8 @@ public class Controller {
             double ballVelocityX = ball.getVelocityX();
             double ballVelocityY = ball.getVelocityY();
 
-            if (ballY + ballRadius >= Settings.WORLD_HEIGHT + 100) {
-                ball.setY(Settings.WORLD_HEIGHT - ballRadius + 100);
+            if (ballY + ballRadius >= Settings.WORLD_HEIGHT + (Settings.BALL_RADIUS * 3)) {
+                ball.setY(Settings.WORLD_HEIGHT - ballRadius + (Settings.BALL_RADIUS * 3));
                 ball.setVelocityY(-ballVelocityY * Settings.DISCOURAGEMENT);
             }
 
@@ -148,17 +150,28 @@ public class Controller {
             }
         }
 
-        Settings.cameraOffsetY = lowestBallY - (Settings.WINDOW_HEIGHT / 2);
+        Settings.cameraOffsetY = lowestBallY - (double) (Settings.WINDOW_HEIGHT / 2);
 
         if (Settings.cameraOffsetY < 0) {
             Settings.cameraOffsetY = 0;
         }
 
-        double maxOffset = Settings.WORLD_HEIGHT - Settings.WINDOW_HEIGHT + 100;
+        double maxOffset = Settings.WORLD_HEIGHT - Settings.WINDOW_HEIGHT + (Settings.BALL_RADIUS * 3);
         if (Settings.cameraOffsetY > maxOffset) {
             Settings.cameraOffsetY = maxOffset;
         }
     }
 
+    private static void createTriangles(int numberOfTriangles) {
+        int sizeA = 200;
+        int sizeB = 100;
 
+        for (int i = 0; i < numberOfTriangles; i++) {
+            int y = i * sizeA;
+            int x = Settings.WORLD_WIDTH - sizeB;
+
+            TriangleObstacle.Direction direction = TriangleObstacle.Direction.LEFT;
+            triangles.add(new TriangleObstacle(x, y, sizeA, sizeB, direction));
+        }
+    }
 }
