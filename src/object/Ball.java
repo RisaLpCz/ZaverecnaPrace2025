@@ -1,7 +1,9 @@
 package object;
 
+import java.util.InputMismatchException;
+
 public class Ball {
-    private final String name;
+    private String name;
     private int radius;
     private double x;
     private double y;
@@ -13,18 +15,32 @@ public class Ball {
 
 
     public Ball(String name, int radius, double x, double y) {
-        this.name = name;
-        this.radius = radius;
-        this.x = x;
-        this.y = y;
-        this.velocityX = 0.5;
-        this.velocityY = 2;
-        setLastUpdateTime(System.currentTimeMillis());
+        try {
+            setName(name);
+            this.radius = radius;
+            this.x = x;
+            this.y = y;
+            this.velocityX = 0.5;
+            this.velocityY = 2;
+            setLastUpdateTime(System.currentTimeMillis());
+        } catch (InputMismatchException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void move() {
         x += velocityX;
         y += velocityY;
+    }
+
+    public void setName(String name) throws InputMismatchException {
+        if (name.matches("")) {
+            this.name = name;
+            //dodelat regex na mag pocet pismen a odsranit nektere znaky
+        }
+        else {
+            throw new InputMismatchException("Invalid name entered");
+        }
     }
 
     public String getName() {

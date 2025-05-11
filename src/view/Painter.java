@@ -3,6 +3,7 @@ package view;
 import controller.Controller;
 import controller.Settings;
 import object.Ball;
+import object.RoundObstacle;
 import object.TriangleObstacle;
 
 import javax.swing.*;
@@ -26,37 +27,23 @@ public class Painter extends JPanel {
             graphics.fillRect(i + 10, (Settings.WORLD_HEIGHT + 10) - (int) Settings.cameraOffsetY, 10, 10);
         }
 
-        for (TriangleObstacle triangle : Controller.triangles) {
-            int x = triangle.getX();
-            int y = triangle.getY() - (int) Settings.cameraOffsetY;
-            int a = triangle.getSideA();
-            int b = triangle.getSideB();
+        for (TriangleObstacle triangleObstacle : Controller.trianglesObstacles) {
+            int[] xPoints = triangleObstacle.getxPoints();
+            int[] yPoints = triangleObstacle.getyPoints();
 
-            int[] xPoints = new int[3];
-            int[] yPoints = new int[3];
-
-            switch (triangle.getDirection()) {
-                case UP:
-                    xPoints = new int[]{x - a, x + a, x};
-                    yPoints = new int[]{y + b, y + b, y};
-                    break;
-                case DOWN:
-                    xPoints = new int[]{x - a, x + a, x};
-                    yPoints = new int[]{y - b, y - b, y};
-                    break;
-                case LEFT:
-                    xPoints = new int[]{x + b, x + b, x};
-                    yPoints = new int[]{y - a, y + a, y};
-                    break;
-                case RIGHT:
-                    xPoints = new int[]{x - b, x - b, x};
-                    yPoints = new int[]{y - a, y + a, y};
-                    break;
+            int[] camerYPoints = new int[3];
+            for (int i = 0; i < 3; i++) {
+                camerYPoints[i] = yPoints[i] - (int) Settings.cameraOffsetY;
             }
-
-            graphics2D.fillPolygon(xPoints, yPoints, 3);
+            graphics.fillPolygon(xPoints, camerYPoints, 3);
         }
 
+        for (RoundObstacle roundObstacle : Controller.roundObstacles) {
+            graphics.drawOval(roundObstacle.getX() - roundObstacle.getRadius(),
+                    (int) (roundObstacle.getY() - roundObstacle.getRadius() - Settings.cameraOffsetY),
+                    roundObstacle.getRadius() * 2,
+                    roundObstacle.getRadius() * 2);
+        }
 
         for (Ball ball : Controller.ballList) {
             graphics.setColor(Color.CYAN);

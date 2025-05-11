@@ -1,5 +1,6 @@
 package controller;
 
+import javax.imageio.plugins.tiff.TIFFImageReadParam;
 import java.util.*;
 
 public class BallsSpawnGenerator {
@@ -18,7 +19,8 @@ public class BallsSpawnGenerator {
     private Random random = new Random();
 
     public BallsSpawnGenerator() {
-        generateFreePoints();
+        //generateFreePoints();
+        generateCircleFreePoints();
     }
 
     public boolean run() {
@@ -47,6 +49,28 @@ public class BallsSpawnGenerator {
                 freePoints.add(new Point(x, y));
             }
         }
+    }
+
+    private void generateCircleFreePoints() {
+        freePoints = new HashSet<>();
+
+        double circleRadius = Settings.CIRCLE_RADIUS;
+        double circleCentreX = Settings.CIRCLEX;
+        double circleCentreY = Settings.CIRCLEY;
+
+        double usableRadius = circleRadius - RADIUS;
+        double radiusSquared = usableRadius * usableRadius;
+
+        for (double x = circleCentreX - usableRadius; x <= circleCentreX + usableRadius; x += STEP) {
+            for (double y = circleCentreY - usableRadius; y <= circleCentreY + usableRadius; y += STEP) {
+                double distanceSquared = (x - circleCentreX) * (x - circleCentreX) + (y - circleCentreY) * (y - circleCentreY);
+                if (distanceSquared <= radiusSquared) {
+                    freePoints.add(new Point(x, y));
+                }
+            }
+        }
+
+
     }
 
     private void updateUnuseablePoints(Point centerPoint) {

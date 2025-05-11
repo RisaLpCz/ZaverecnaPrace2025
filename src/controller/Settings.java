@@ -1,19 +1,35 @@
 package controller;
 
 public class Settings {
-    public static final double GRAVITACNIKONSTANTA = 9.81;
+    //OKNO/SVET
     public static final int WINDOW_WIDTH = 570;
     public static final int WINDOW_HEIGHT = 1000;
-    public final static int WORLD_HEIGHT = 1500;
+    public final static int WORLD_HEIGHT = 5000;
     public final static int WORLD_WIDTH = WINDOW_WIDTH;
-
     public static double cameraOffsetY = 0;
 
+    //OBJEKTY
 
+    //mice
     public static final int BALL_RADIUS = 40;
-    public static final int BALL_NUMBER = 30;
-    public static final double DISCOURAGEMENT = 1.05; //vymyslet vzorec podle poctu mic
+    public static final int BALL_NUMBER = 10;
+    public static final double DISCOURAGEMENT = 1.01; //vymyslet vzorec podle poctu mic
     public static final double BALL_DISCOURAGEMENT = 0.9; //vymyslet vzorec podle poctu micu
+    //pozice
+    public static final double CIRCLE_RADIUS = 200;
+    public static final double CIRCLEX = (double) WORLD_WIDTH / 2 ;
+    public static final double CIRCLEY = BALL_RADIUS + 160;
+
+
+    //trojuhelnikove prekazky
+    public static final int TRIANGLE_WIDTH = 180;
+    public static final int TRIANGLE_HEIGHT = 300;
+    public static final int TRIANGLE_NUMBER = 3;
+
+    //FYZIKA
+    public static final double GRAVITACNIKONSTANTA = 9.81;
+
+
 
 
     //pokud budu delat graficke nastavnovani s listou muze se hodit

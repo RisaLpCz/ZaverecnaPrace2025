@@ -1,27 +1,32 @@
 package controller;
 
 import object.Ball;
+import object.RoundObstacle;
 import object.TriangleObstacle;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Set;
 
 public class Controller {
 
     public static ArrayList<Ball> ballList;
-    public static ArrayList<TriangleObstacle> triangles;
+    public static ArrayList<TriangleObstacle> trianglesObstacles;
+    public static ArrayList<RoundObstacle> roundObstacles;
 
 
     public static void initialization() {
         ballList = new ArrayList<>();
-        triangles = new ArrayList<>();
+        trianglesObstacles = new ArrayList<>();
+        roundObstacles = new ArrayList<>();
         generateBalls();
-        createTriangles(3);
+        createTriangles();
+        createCircles();
     }
 
     public static void startTime() {
         countGravity();
-        moveBalls();
+        //moveBalls();
         checkCollision();
         updateCamera();
     }
@@ -162,16 +167,54 @@ public class Controller {
         }
     }
 
-    private static void createTriangles(int numberOfTriangles) {
-        int sizeA = 200;
-        int sizeB = 100;
+    private static void createTriangles() {
+        int height = Settings.TRIANGLE_HEIGHT;
+        int width = Settings.TRIANGLE_WIDTH;
+        int numberOfTriangles = Settings.TRIANGLE_NUMBER;
+
+        int startXL = Settings.WORLD_WIDTH - width;
+        int startXR = 0;
+        int startXM = (Settings.WORLD_WIDTH / 2) - (width  / 2);
+        int startY = 500;
 
         for (int i = 0; i < numberOfTriangles; i++) {
-            int y = i * sizeA;
-            int x = Settings.WORLD_WIDTH - sizeB;
+            int y = startY + i * height;
 
-            TriangleObstacle.Direction direction = TriangleObstacle.Direction.LEFT;
-            triangles.add(new TriangleObstacle(x, y, sizeA, sizeB, direction));
+            TriangleObstacle triangleL = new TriangleObstacle(startXL, y, width, height, TriangleObstacle.Direction.LEFT);
+            TriangleObstacle triangleR = new TriangleObstacle(startXR, y, width, height, TriangleObstacle.Direction.RIGHT);
+            trianglesObstacles.add(triangleL);
+            trianglesObstacles.add(triangleR);
+        }
+
+        int spacing = 50;
+        int y = startY - 90;
+        height = (width * width) / height;
+
+        int heightSide = numberOfTriangles * height;
+        int hegihtPerPair = 2 * height + spacing;
+
+        int numberInMiddle = (int) Math.ceil((double) heightSide / hegihtPerPair * 2);
+
+        for (int i = 0; i < numberInMiddle + 2;) {
+            TriangleObstacle upTriangle = new TriangleObstacle(startXM, y, width, height, TriangleObstacle.Direction.UP);
+            trianglesObstacles.add(upTriangle);
+            i++;
+            y += height;
+
+            if (i < numberInMiddle + 2) {
+                TriangleObstacle downTriangle = new TriangleObstacle(startXM, y, width, height, TriangleObstacle.Direction.DOWN);
+                trianglesObstacles.add(downTriangle);
+                i++;
+                y += height;
+            }
+
+            y += spacing;
+
         }
     }
+
+    private static void createCircles() {
+        roundObstacles.add(new RoundObstacle((int) Settings.CIRCLEX, (int) Settings.CIRCLEY, (int) Settings.CIRCLE_RADIUS, 0));
+    }
+
 }
