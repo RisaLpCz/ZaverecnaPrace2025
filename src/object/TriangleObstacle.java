@@ -22,8 +22,8 @@ public class TriangleObstacle extends WorldObject {
     }
 
     private void calculateVertices() {
-        int triangleX = getX();
-        int triangleY = getY();
+        int triangleX = (int) getX();
+        int triangleY = (int) getY();
 
         switch (direction) {
             case UP -> {

@@ -3,6 +3,7 @@ package view;
 import controller.Controller;
 import controller.Settings;
 import object.Ball;
+import object.EdgeObstacle;
 import object.RoundObstacle;
 import object.TriangleObstacle;
 
@@ -38,12 +39,76 @@ public class Painter extends JPanel {
             graphics.fillPolygon(xPoints, camerYPoints, 3);
         }
 
-        for (RoundObstacle roundObstacle : Controller.roundObstacles) {
-            graphics.drawOval(roundObstacle.getX() - roundObstacle.getRadius(),
+        for (RoundObstacle roundObstacle : Controller.roundFillObstacles) {
+            graphics.fillOval((int) (roundObstacle.getX() - roundObstacle.getRadius()),
                     (int) (roundObstacle.getY() - roundObstacle.getRadius() - Settings.cameraOffsetY),
                     roundObstacle.getRadius() * 2,
                     roundObstacle.getRadius() * 2);
         }
+
+        ((Graphics2D) graphics).setStroke(new BasicStroke(10));
+
+        for (RoundObstacle roundObstacle : Controller.roundHollowObstacles) {
+            int x = (int) roundObstacle.getX();
+            int y = (int) roundObstacle.getY();
+            int screenY = (int) (y - Settings.cameraOffsetY);
+            int radius = roundObstacle.getRadius();
+            int diameter = roundObstacle.getRadius() * 2;
+            int gapAngle = 30;
+            double angleDeg = Math.toDegrees(roundObstacle.getAngle());
+
+            int baseAngle1 = 90 + (gapAngle / 2);
+            int baseAngle2 = 270 + (gapAngle / 2);
+
+            int angle1Start = (int) (baseAngle1 + angleDeg);
+            int angle2Start = (int) (baseAngle2 + angleDeg);
+
+            int arcSweep = 180 - gapAngle;
+
+            graphics.drawArc(x - radius, screenY - radius, diameter, diameter, angle1Start, arcSweep);
+            graphics.drawArc(x - radius, screenY - radius, diameter, diameter, angle2Start, arcSweep);
+
+        }
+
+        for (EdgeObstacle edgeObstacle : Controller.edgeObstacles) {
+            int x = (int) edgeObstacle.getX();
+            int y = (int) edgeObstacle.getY();
+            int screenY = (int) (y - Settings.cameraOffsetY);
+            int width = edgeObstacle.getWidth();
+            int height = edgeObstacle.getHeight();
+
+            graphics.fillRect(x, screenY, width, height);
+
+        }
+        /*for (int i = 0; i < Controller.roundHollowObstacles.size() - 2; i++) {
+            int x = Controller.roundHollowObstacles.get(i).getX();
+            int y = Controller.roundHollowObstacles.get(i).getY();
+            int screenY = (int) (y - Settings.cameraOffsetY);
+            int radius = Controller.roundHollowObstacles.get(i).getRadius();
+            int diameter = Controller.roundHollowObstacles.get(i).getRadius() * 2;
+            int gapAngle = 30;
+            double angleDeg = Math.toDegrees(Controller.roundHollowObstacles.get(i).getAngle());
+
+            int baseAngle1 = 90 + (gapAngle / 2);
+            int baseAngle2 = 270 + (gapAngle / 2);
+
+            int angle1Start = (int) (baseAngle1 + angleDeg);
+            int angle2Start = (int) (baseAngle2 + angleDeg);
+
+            int arcSweep = 180 - gapAngle;
+
+            graphics.drawArc(x - radius, screenY - radius, diameter, diameter, angle1Start, arcSweep);
+            graphics.drawArc(x - radius, screenY - radius, diameter, diameter, angle2Start, arcSweep);
+        }
+         */
+
+        /*graphics.drawArc(Controller.roundHollowObstacles.getLast().getX() - Controller.roundHollowObstacles.getLast().getRadius(),
+                (int) (Controller.roundHollowObstacles.getLast().getY() - Controller.roundHollowObstacles.getLast().getRadius() - Settings.cameraOffsetY),
+                Controller.roundHollowObstacles.getLast().getRadius() * 2, Controller.roundHollowObstacles.getLast().getRadius() * 2, 0, 180 - (30 / 2)
+        );
+         */
+
+        ((Graphics2D) graphics).setStroke(new BasicStroke(2));
 
         for (Ball ball : Controller.ballList) {
             graphics.setColor(Color.CYAN);
@@ -54,7 +119,6 @@ public class Painter extends JPanel {
                     ball.getRadius() * 2
             );
 
-
             graphics.setColor(Color.RED);
             int diameter = (ball.getRadius() * 2);
             graphics.drawOval(
@@ -64,5 +128,6 @@ public class Painter extends JPanel {
                     diameter
             );
         }
+
     }
 }
