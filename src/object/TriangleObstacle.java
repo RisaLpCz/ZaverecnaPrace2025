@@ -17,7 +17,7 @@ public class TriangleObstacle extends WorldObject {
         super(x, y);
         setWidth(width);
         setHeight(height);
-        this.direction = direction;
+        setDirection(direction);
         calculateVertices();
     }
 
@@ -25,7 +25,7 @@ public class TriangleObstacle extends WorldObject {
         int triangleX = (int) getX();
         int triangleY = (int) getY();
 
-        switch (direction) {
+        switch (getDirection()) {
             case UP -> {
                 xPoints = new int[]{triangleX, triangleX + getWidth() / 2, triangleX + getWidth()};
                 yPoints = new int[]{triangleY + getHeight(), triangleY, triangleY + getHeight()};

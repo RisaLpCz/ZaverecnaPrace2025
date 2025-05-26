@@ -7,7 +7,6 @@ import object.TriangleObstacle;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Set;
 
 public class Controller {
 
@@ -15,7 +14,10 @@ public class Controller {
     public static ArrayList<TriangleObstacle> trianglesObstacles;
     public static ArrayList<RoundObstacle> roundFillObstacles;
     public static ArrayList<RoundObstacle> roundHollowObstacles;
+    public static ArrayList<RoundObstacle> roundHollowObstacles2;
     public static ArrayList<EdgeObstacle> edgeObstacles;
+    public static ArrayList<RoundObstacle> spawnCircle;
+    public static ArrayList<EdgeObstacle> spinningCrosses;
 
 
     public static void initialization() {
@@ -23,7 +25,11 @@ public class Controller {
         trianglesObstacles = new ArrayList<>();
         roundFillObstacles = new ArrayList<>();
         roundHollowObstacles = new ArrayList<>();
+        roundHollowObstacles2 = new ArrayList<>();
         edgeObstacles = new ArrayList<>();
+        spawnCircle = new ArrayList<>();
+        spinningCrosses = new ArrayList<>();
+        createSpawnCircle();
         generateBalls();
         createTriangles();
         createFillCircles();
@@ -33,15 +39,13 @@ public class Controller {
 
     public static void startTime() {
         countGravity();
-        moveBalls();
-        rotateCircles();
-        moveRectangles();
+        moveObstacles();
+        createSpinningCrosses();
         checkCollision();
         updateCamera();
     }
 
     public static void generateBalls() {
-        Random random = new Random();
         BallsSpawnGenerator spawnGenerator = new BallsSpawnGenerator();
         int ballNumber = Settings.BALL_NUMBER;
         int ballRadius = Settings.BALL_RADIUS;
@@ -59,22 +63,28 @@ public class Controller {
         System.out.println("Pocet nenakreslenych kruhu: " + (Settings.BALL_NUMBER - ballList.size()));
     }
 
-    private static void moveBalls() {
+    private static void moveObstacles() {
         for (Ball ball : ballList) {
             ball.move();
         }
-    }
 
-    private static void rotateCircles() {
         for (RoundObstacle roundObstacle : roundHollowObstacles) {
             roundObstacle.rotate();
         }
-    }
+        for (RoundObstacle roundObstacle : roundHollowObstacles2) {
+            roundObstacle.rotate();
+        }
 
-    private static void moveRectangles() {
+
         for (EdgeObstacle edgeObstacle : edgeObstacles) {
             edgeObstacle.moveRectangles();
         }
+
+
+        for (EdgeObstacle edgeObstacle : spinningCrosses) {
+            edgeObstacle.rotate();
+        }
+
     }
 
     private static void checkCollision() {
@@ -188,6 +198,14 @@ public class Controller {
         }
     }
 
+    private static void createSpawnCircle() {
+        int x = (int) Settings.CIRCLEX;
+        int y = (int) Settings.CIRCLEY;
+        int radius = (int) Settings.CIRCLE_RADIUS;
+        RoundObstacle roundObstacle = new RoundObstacle(x, y, radius);
+        spawnCircle.add(roundObstacle);
+    }
+
     private static void createTriangles() {
         int height = Settings.TRIANGLE_HEIGHT;
         int width = Settings.TRIANGLE_WIDTH;
@@ -195,7 +213,7 @@ public class Controller {
 
         int startXL = Settings.WORLD_WIDTH - width;
         int startXR = 0;
-        int startXM = (Settings.WORLD_WIDTH / 2) - (width  / 2);
+        int startXM = (Settings.WORLD_WIDTH / 2) - (width / 2);
         int startY = 700;
 
         for (int i = 0; i < numberOfTriangles; i++) {
@@ -216,7 +234,7 @@ public class Controller {
 
         int numberInMiddle = (int) Math.ceil((double) heightSide / hegihtPerPair * 2);
 
-        for (int i = 0; i < numberInMiddle + 2;) {
+        for (int i = 0; i < numberInMiddle + 2; ) {
             TriangleObstacle upTriangle = new TriangleObstacle(startXM, y, width, height, TriangleObstacle.Direction.UP);
             trianglesObstacles.add(upTriangle);
             i++;
@@ -282,7 +300,7 @@ public class Controller {
         int yLeft = 3200;
 
         for (int i = 0; i < 2; i++) {
-            int yRight = (int)(yLeft + dy);
+            int yRight = (int) (yLeft + dy);
 
             roundHollowObstacles.add(new RoundObstacle(radius, yLeft, radius, Settings.CIRCLE_ROTATIONSPEED));
             roundHollowObstacles.add(new RoundObstacle(startXRight, yRight, radius, Settings.CIRCLE_ROTATIONSPEED));
@@ -295,8 +313,8 @@ public class Controller {
         int radiusS = Settings.SMALL_INSIDE_CIRCLES_RADIUS;
         int y = 4500;
 
-        roundHollowObstacles.add(new RoundObstacle(radiusL, y, radiusL, Settings.CIRCLE_ROTATIONSPEED));
-        roundHollowObstacles.add(new RoundObstacle(radiusL, y, radiusS, Settings.CIRCLE_ROTATIONSPEED));
+        roundHollowObstacles2.add(new RoundObstacle(radiusL, y, radiusL, Settings.CIRCLE_ROTATIONSPEED));
+        roundHollowObstacles2.add(new RoundObstacle(radiusL, y, radiusS, Settings.CIRCLE_ROTATIONSPEED));
     }
 
     private static void createEdgeObstacles() {
@@ -308,8 +326,8 @@ public class Controller {
         int gapX = 85 * 2;
         int gapY = 50 * 2;
 
-        int numberOfRows = 8;
-        int rectanglesPerRow = 4;
+        int numberOfRows = Settings.EDGE_OBSTACLES_ROWS;
+        int rectanglesPerRow = Settings.EDGE_OBSTACLES_NUMBER_IN_ROW;
 
         for (int i = 0; i < numberOfRows; i++) {
             int offsetX = (i % 2 == 0) ? 0 : -width / 2;
@@ -320,6 +338,48 @@ public class Controller {
 
                 edgeObstacles.add(new EdgeObstacle(x, y));
             }
+        }
+    }
+
+    private static void createSpinningCrosses() {
+        int windowWidth = Settings.WORLD_WIDTH;
+
+        int hWidth = Settings.SPINNING_OBSTACLE_WIDTH;
+        int hHeight = Settings.SPINNING_OBSTACLE_HEIGHT;
+
+        int vWidth = Settings.SPINNING_OBSTACLE_HEIGHT;
+        int vHeight = Settings.SPINNING_OBSTACLE_WIDTH;
+
+        double rotatingSpeed = Settings.CIRCLE_ROTATIONSPEED;
+        double rotatingDirection;
+
+        int wideGap = 57;
+        int rowGap = wideGap + vHeight;
+        int startY = 6100;
+
+        int rows = Settings.SPINNING_OBSTACLE_ROWS;
+
+        int leftX;
+        int rightX;
+
+        for (int i = 0; i < rows; i++) {
+            int y = startY + i * rowGap;
+
+            if (i % 2 == 0) {
+                leftX = -(hWidth - hHeight) / 2;
+                rightX = windowWidth - (hWidth - ((hWidth - hHeight) / 2));
+                rotatingDirection = 1;
+            } else {
+                leftX = 57;
+                rightX = windowWidth - hWidth - 57;
+                rotatingDirection = -1;
+            }
+
+            spinningCrosses.add(new EdgeObstacle(leftX, y, hWidth, hHeight, rotatingDirection * rotatingSpeed));
+            spinningCrosses.add(new EdgeObstacle(leftX + (hWidth - vWidth) / 2, y - (vHeight - hHeight) / 2, vWidth, vHeight, rotatingDirection * rotatingSpeed));
+
+            spinningCrosses.add(new EdgeObstacle(rightX, y, hWidth, hHeight, rotatingDirection * rotatingSpeed));
+            spinningCrosses.add(new EdgeObstacle(rightX + (hWidth - vWidth) / 2, y - (vHeight - hHeight) / 2, vWidth, vHeight, rotatingDirection * rotatingSpeed));
         }
     }
 

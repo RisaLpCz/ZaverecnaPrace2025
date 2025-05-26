@@ -4,7 +4,7 @@ public class Settings {
     //OKNO/SVET
     public static final int WINDOW_WIDTH = 570;
     public static final int WINDOW_HEIGHT = 1000;
-    public final static int WORLD_HEIGHT = 6000;
+    public final static int WORLD_HEIGHT = 7500;
     public final static int WORLD_WIDTH = WINDOW_WIDTH;
     public static double cameraOffsetY = 0;
 
@@ -31,12 +31,20 @@ public class Settings {
     public static final double CIRCLE_ROTATIONSPEED = 0.05;
     public static final int MOVING_CIRCLES_RADIUS = 155;
     public static final int SMALL_INSIDE_CIRCLES_RADIUS = 120;
+    public static final int LINE_WIDTH = 10;
 
 
     //Hranate prekazky
     public static final int EDGE_OBSTACLES_WIDTH = 90;
     public static final int EDGE_OBSTACLES_HEIGHT = 40;
     public static final double EDGE_OBSTACLES_MOVINGSPEED = 1;
+    public static final int EDGE_OBSTACLES_ROWS = 8;
+    public static final int EDGE_OBSTACLES_NUMBER_IN_ROW = 4;
+    public static final int SPINNING_OBSTACLE_WIDTH = 210;
+    public static final int SPINNING_OBSTACLE_HEIGHT = 50;
+    public static final int SPINNING_OBSTACLE_ROWS = 4;
+
+
 
     //FYZIKA
     public static final double GRAVITACNIKONSTANTA = 9.81;

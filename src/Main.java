@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class Main {
     public static void main(String[] args) {
@@ -18,6 +20,14 @@ public class Main {
         Painter painter = new Painter();
         painter.setPreferredSize(new Dimension(Settings.WINDOW_WIDTH, Settings.WINDOW_HEIGHT));
         window.add(painter);
+        window.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent event) {
+                if (event.getKeyCode() == KeyEvent.VK_SPACE && !Controller.spawnCircle.isEmpty()) {
+                    Controller.spawnCircle.clear();
+                }
+            }
+        });
         window.pack();
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

@@ -1,9 +1,6 @@
 package object;
 
-import controller.Settings;
-
 public class RoundObstacle extends WorldObject {
-    //private final int radius;
     private int radius;
     private double angle;
     private double rotationSpeed;
@@ -15,8 +12,8 @@ public class RoundObstacle extends WorldObject {
 
     public RoundObstacle(int x, int y, int radius, double rotationSpeed) {
         super(x, y);
-        this.radius = radius;
-        this.rotationSpeed = rotationSpeed;
+        setRadius(radius);
+        setRotationSpeed(rotationSpeed);
         setAngle(0);
     }
 

@@ -2,14 +2,11 @@ package object;
 
 import controller.Settings;
 
-import java.util.Set;
-
 public class EdgeObstacle extends WorldObject {
-    //private final int width; kdyz budu chtit aby se nezvecovala velikost
-    //private final int height; kdyz budu chtit aby se nezvecovala velikost
     private int width;
     private int height;
-    private int angle;
+    private double angle;
+    private double rotatingSpeed;
     private int spawnX;
     private boolean movingRight = true;
 
@@ -21,11 +18,12 @@ public class EdgeObstacle extends WorldObject {
         spawnX = x;
     }
 
-    public EdgeObstacle(int x, int y, int width, int height, int angle) {
+    public EdgeObstacle(int x, int y, int width, int height, double rotatingSpeed) {
         super(x, y);
-        this.width = width;
-        this.height = height;
-        this.angle = angle;
+        setWidth(width);
+        setHeight(height);
+        setRotatingSpeed(rotatingSpeed);
+        setAngle(0.0);
     }
 
     public void moveRectangles() {
@@ -42,7 +40,13 @@ public class EdgeObstacle extends WorldObject {
                 setMovingRight(true);
             }
         }
+    }
 
+    public void rotate() {
+        angle += getRotatingSpeed();
+        if (angle > 2 * Math.PI) {
+            angle -= (2 * Math.PI);
+        }
     }
 
     public int getWidth() {
@@ -61,12 +65,20 @@ public class EdgeObstacle extends WorldObject {
         this.height = height;
     }
 
-    public int getAngle() {
+    public double getAngle() {
         return angle;
     }
 
-    public void setAngle(int angle) {
+    public void setAngle(double angle) {
         this.angle = angle;
+    }
+
+    public double getRotatingSpeed() {
+        return rotatingSpeed;
+    }
+
+    public void setRotatingSpeed(double rotatingSpeed) {
+        this.rotatingSpeed = rotatingSpeed;
     }
 
     public int getSpawnX() {

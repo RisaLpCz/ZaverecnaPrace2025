@@ -5,8 +5,6 @@ import java.util.*;
 
 public class BallsSpawnGenerator {
 
-    //doplnit kruhovy spawner
-
     private static double x;
     private static double y;
 
@@ -41,7 +39,7 @@ public class BallsSpawnGenerator {
         }
     }
 
-    private void generateFreePoints() {
+    private void generateSquareFreePoints() {
         freePoints = new HashSet<>();
 
         for (double x = RADIUS; x <= WIDTH - RADIUS; x += STEP) {
