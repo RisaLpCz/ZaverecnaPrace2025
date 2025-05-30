@@ -1,5 +1,7 @@
 package object;
 
+import java.util.ArrayList;
+
 public class TriangleObstacle extends WorldObject {
 
     private int width;
@@ -44,6 +46,75 @@ public class TriangleObstacle extends WorldObject {
             }
         }
     }
+
+    public void collision(ArrayList<Ball> ballList) {
+        for (Ball ball : ballList) {
+            double ballX = ball.getX();
+            double ballY = ball.getY();
+            double radius = ball.getRadius();
+
+            double closestX = ballX;
+            double closestY = ballY;
+            double minDistSquared = Double.MAX_VALUE;
+
+            for (int i = 0; i < 3; i++) {
+                int j = (i + 1) % 3;
+                double[] closest = closestPointOnLineSegment(
+                        xPoints[i], yPoints[i],
+                        xPoints[j], yPoints[j],
+                        ballX, ballY
+                );
+
+                double dx = ballX - closest[0];
+                double dy = ballY - closest[1];
+                double distSquared = dx * dx + dy * dy;
+
+                if (distSquared < minDistSquared) {
+                    minDistSquared = distSquared;
+                    closestX = closest[0];
+                    closestY = closest[1];
+                }
+            }
+
+            if (minDistSquared < radius * radius) {
+                double dx = ballX - closestX;
+                double dy = ballY - closestY;
+                double distance = Math.sqrt(minDistSquared);
+
+                double nx = dx / distance;
+                double ny = dy / distance;
+
+                double dot = ball.getVelocityX() * nx + ball.getVelocityY() * ny;
+                double projNormX = dot * nx;
+                double projNormY = dot * ny;
+
+                double slipX = ball.getVelocityX() - projNormX;
+                double slipY = ball.getVelocityY() - projNormY;
+
+                ball.setVelocityX(slipX);
+                ball.setVelocityY(slipY);
+
+                double overlap = radius - distance;
+                ball.setX(ball.getX() + nx * overlap);
+                ball.setY(ball.getY() + ny * overlap);
+            }
+        }
+    }
+
+    private double[] closestPointOnLineSegment(double x1, double y1, double x2, double y2, double px, double py) {
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+
+        if (dx == 0 && dy == 0) {
+            return new double[]{x1, y1};
+        }
+
+        double t = ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy);
+        t = Math.max(0, Math.min(1, t));
+
+        return new double[]{x1 + t * dx, y1 + t * dy};
+    }
+
 
     public int getWidth() {
         return width;

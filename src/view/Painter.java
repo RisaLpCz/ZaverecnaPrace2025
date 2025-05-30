@@ -15,7 +15,6 @@ public class Painter extends JPanel {
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
-        Graphics2D graphics2D = (Graphics2D) graphics;
 
         setBackground(new Color(111, 210, 255));
 
@@ -70,53 +69,15 @@ public class Painter extends JPanel {
 
         }
 
-        for (RoundObstacle roundObstacle : Controller.roundHollowObstacles) {
-            int x = (int) roundObstacle.getX();
-            int y = (int) roundObstacle.getY();
-            int screenY = (int) (y - Settings.cameraOffsetY);
-            int radius = roundObstacle.getRadius() + Settings.LINE_WIDTH / 2;
-            int diameter = roundObstacle.getRadius() * 2;
-            int gapAngle = 30;
-            double angleDeg = Math.toDegrees(roundObstacle.getAngle());
-
-            int baseAngle1 = 90 + (gapAngle / 2);
-            int baseAngle2 = 270 + (gapAngle / 2);
-
-            int angle1Start = (int) (baseAngle1 + angleDeg);
-            int angle2Start = (int) (baseAngle2 + angleDeg);
-
-            int arcSweep = 180 - gapAngle;
-
-            graphics.drawArc(x - radius, screenY - radius, diameter, diameter, angle1Start, arcSweep);
-            graphics.drawArc(x - radius, screenY - radius, diameter, diameter, angle2Start, arcSweep);
-        }
-
-        for (RoundObstacle roundObstacle : Controller.roundHollowObstacles2) {
-            int x = (int) roundObstacle.getX();
-            int y = (int) roundObstacle.getY();
-            int screenY = (int) (y - Settings.cameraOffsetY);
-            int radius = roundObstacle.getRadius() + Settings.LINE_WIDTH / 2;
-            int diameter = radius * 2;
-            double angleOffset = Math.toDegrees(roundObstacle.getAngle());
-
-            double arcLength = 179;
-            double circumference = 2 * Math.PI * radius;
-            double arcAngle = (arcLength / circumference) * 360.0;
-            int segmentCount = (int)(360 / (2 * arcAngle));
-
-            for (int j = 0; j < segmentCount; j++) {
-                double startAngle = j * 2 * arcAngle + angleOffset;
-                graphics.drawArc(x - radius, screenY - radius, diameter, diameter,
-                        (int) startAngle, (int) arcAngle);
-            }
-        }
-
         for (EdgeObstacle edgeObstacle : Controller.spinningCrosses) {
             int x = (int) edgeObstacle.getX();
             int y = (int) (edgeObstacle.getY() - Settings.cameraOffsetY);
             int width = edgeObstacle.getWidth();
             int height = edgeObstacle.getHeight();
             double angle = edgeObstacle.getAngle();
+
+            int centerX = x + width / 2;
+            int centerY = y + height / 2;
 
             graphics.fillRect(x, y, width, height);
         }
