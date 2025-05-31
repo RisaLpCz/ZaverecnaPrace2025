@@ -6,18 +6,53 @@ import object.RoundObstacle;
 import object.TriangleObstacle;
 
 import java.util.ArrayList;
-import java.util.Random;
 
+/**
+ * Controller class is responsible for managing the game logic,
+ * including initialization, ball movement, collision detection,
+ * obstacle management, and winner determination.
+ */
 public class Controller {
 
+    /**
+     * List of all balls in the game
+     */
     public static ArrayList<Ball> ballList;
+
+    /**
+     * List of triangle obstacles
+     */
     public static ArrayList<TriangleObstacle> trianglesObstacles;
+
+    /**
+     * List of round fill obstacles
+     */
     public static ArrayList<RoundObstacle> roundFillObstacles;
+
+    /**
+     * List of edge obstacles
+     */
     public static ArrayList<EdgeObstacle> edgeObstacles;
+
+    /**
+     * List representing the spawn circle obstacles
+     */
     public static ArrayList<RoundObstacle> spawnCircle;
+
+    /**
+     * List of spinning cross obstacles
+     */
     public static ArrayList<EdgeObstacle> spinningCrosses;
 
+    /**
+     * List of balls that have finished the game
+     */
+    public static ArrayList<Ball> finishedBalls;
 
+    /**
+     * Initializes all game elements: balls, obstacles, spawn points.
+     * Called once at the start of the game.
+     */
     public static void initialization() {
         ballList = new ArrayList<>();
         trianglesObstacles = new ArrayList<>();
@@ -25,39 +60,65 @@ public class Controller {
         edgeObstacles = new ArrayList<>();
         spawnCircle = new ArrayList<>();
         spinningCrosses = new ArrayList<>();
+        finishedBalls = new ArrayList<>();
         createSpawnCircle();
-        generateBalls();
+        if (ballList.isEmpty()) {
+            generateBalls();
+        }
         createTriangles();
         createFillCircles();
         createSpinningCrosses();
         createEdgeObstacles();
     }
 
+    /**
+     * Starts the game update loop:
+     * applies gravity, moves obstacles, checks collisions,
+     * updates camera, and determines the winner.
+     * Called on every timer tick.
+     */
     public static void startTime() {
-        countGravity();
-        moveObstacles();
-        checkCollision();
-        updateCamera();
+        if (finishedBalls.size() < 3) {
+            countGravity();
+            moveObstacles();
+            checkCollision();
+            updateCamera();
+            checkWinner();
+        }
     }
 
+    /**
+     * Generates balls with names loaded from a file.
+     * Adds balls to the ballList until the desired number is reached
+     * or spawnGenerator stops spawning.
+     */
     public static void generateBalls() {
         BallsSpawnGenerator spawnGenerator = new BallsSpawnGenerator();
+        ArrayList<String> names = Ball.loadBallNames("D:\\C2a\\ZaverecnaPrace2025\\src\\Files\\names.txt");
         int ballNumber = Settings.BALL_NUMBER;
         int ballRadius = Settings.BALL_RADIUS;
-
 
         for (int i = 0; i < ballNumber; i++) {
             boolean spawnBall = spawnGenerator.run();
 
             if (spawnBall) {
-                ballList.add(new Ball(BallsSpawnGenerator.getX(), BallsSpawnGenerator.getY(), "", ballRadius));
+                String name;
+                if (i < names.size()) {
+                    name = names.get(i);
+                } else {
+                    name = "Number";
+                }
+                ballList.add(new Ball(BallsSpawnGenerator.getX(), BallsSpawnGenerator.getY(), name, (i + 1), ballRadius));
             } else {
                 break;
             }
         }
-        System.out.println("Pocet nenakreslenych kruhu: " + (Settings.BALL_NUMBER - ballList.size()));
+        System.out.println("Number of balls not spawned: " + (Settings.BALL_NUMBER - ballList.size()));
     }
 
+    /**
+     * Moves all balls and edge obstacles according to their velocities.
+     */
     private static void moveObstacles() {
         for (Ball ball : ballList) {
             ball.move();
@@ -67,8 +128,11 @@ public class Controller {
         }
     }
 
+    /**
+     * Checks and resolves collisions between balls and obstacles,
+     * as well as between balls themselves, applying appropriate physics.
+     */
     private static void checkCollision() {
-
         if (!spawnCircle.isEmpty()) {
             spawnCircle.getFirst().spawnCollision(ballList);
         }
@@ -86,19 +150,12 @@ public class Controller {
             edgeObstacle.collision(ballList);
         }
 
-
         for (Ball ball : ballList) {
             double ballX = ball.getX();
             double ballY = ball.getY();
             double ballRadius = ball.getRadius();
             double ballVelocityX = ball.getVelocityX();
             double ballVelocityY = ball.getVelocityY();
-
-            /*if (ballY + ballRadius >= Settings.WORLD_HEIGHT + (Settings.BALL_RADIUS * 10)) {
-                ball.setY(Settings.WORLD_HEIGHT - ballRadius + (Settings.BALL_RADIUS * 10));
-                ball.setVelocityY(-ballVelocityY * Settings.DISCOURAGEMENT);
-            }
-             */
 
             if (ballY - ballRadius <= 0) {
                 ball.setY(ballRadius);
@@ -114,9 +171,9 @@ public class Controller {
                 ball.setX(Settings.WORLD_WIDTH - ballRadius);
                 ball.setVelocityX(-ballVelocityX * Settings.DISCOURAGEMENT);
             }
-
         }
 
+        //zdroj: https://www.101computing.net/elastic-collision-in-a-pool-game/
         for (int i = 0; i < ballList.size(); i++) {
             for (int j = i + 1; j < ballList.size(); j++) {
                 Ball ball1 = ballList.get(i);
@@ -135,33 +192,69 @@ public class Controller {
                         deltaY = 0;
                     }
 
-                    double noramliX = deltaX / distance;
-                    double normaliY = deltaY / distance;
+                    double normalX = deltaX / distance;
+                    double normalY = deltaY / distance;
 
                     double relativeVelocityX = ball2.getVelocityX() - ball1.getVelocityX();
-                    double relativePositionX = ball2.getVelocityY() - ball1.getVelocityY();
+                    double relativeVelocityY = ball2.getVelocityY() - ball1.getVelocityY();
 
-                    double impactSpeed = relativeVelocityX * noramliX + relativePositionX * normaliY;
+                    double impactSpeed = relativeVelocityX * normalX + relativeVelocityY * normalY;
 
                     if (impactSpeed < 0) {
                         double impulse = impactSpeed * Settings.BALL_DISCOURAGEMENT;
 
-                        ball1.setVelocityX(ball1.getVelocityX() + noramliX * impulse);
-                        ball1.setVelocityY(ball1.getVelocityY() + normaliY * impulse);
-                        ball2.setVelocityX(ball2.getVelocityX() - noramliX * impulse);
-                        ball2.setVelocityY(ball2.getVelocityY() - normaliY * impulse);
+                        ball1.setVelocityX(ball1.getVelocityX() + normalX * impulse);
+                        ball1.setVelocityY(ball1.getVelocityY() + normalY * impulse);
+                        ball2.setVelocityX(ball2.getVelocityX() - normalX * impulse);
+                        ball2.setVelocityY(ball2.getVelocityY() - normalY * impulse);
                     }
 
                     double overlap = 0.5 * (sumRadius - distance);
-                    ball1.setX(ball1.getX() - overlap * noramliX);
-                    ball1.setY(ball1.getY() - overlap * normaliY);
-                    ball2.setX(ball2.getX() + overlap * noramliX);
-                    ball2.setY(ball2.getY() + overlap * normaliY);
+                    ball1.setX(ball1.getX() - overlap * normalX);
+                    ball1.setY(ball1.getY() - overlap * normalY);
+                    ball2.setX(ball2.getX() + overlap * normalX);
+                    ball2.setY(ball2.getY() + overlap * normalY);
                 }
             }
         }
     }
 
+    /**
+     * Checks which balls have crossed the finish line
+     * and prints the winner order once 3 balls finish.
+     */
+    private static void checkWinner() {
+        if (finishedBalls.size() != 3) {
+            for (Ball ball : ballList) {
+                double ballY = ball.getY();
+                int ballRadius = ball.getRadius();
+                if (ballY - ballRadius >= Settings.WORLD_HEIGHT && !ball.isHasFinished()) {
+                    ball.setHasFinished(true);
+                    finishedBalls.add(ball);
+                }
+            }
+        }
+        if (finishedBalls.size() == 3) {
+            for (int i = 0; i < 3; i++) {
+                switch (i) {
+                    case 0:
+                        System.out.println("Winner is " + finishedBalls.get(i).getNumber());
+                        break;
+                    case 1:
+                        System.out.println("Second is " + finishedBalls.get(i).getNumber());
+                        break;
+                    case 2:
+                        System.out.println("Third is " + finishedBalls.get(i).getNumber());
+                        break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Applies gravity to all balls by adjusting their vertical velocity
+     * based on the elapsed time since the last update.
+     */
     private static void countGravity() {
         for (Ball ball : ballList) {
             double velocityY = ball.getVelocityY();
@@ -175,6 +268,11 @@ public class Controller {
         }
     }
 
+    /**
+     * Updates the camera vertical offset based on the lowest ball's position
+     * to keep the gameplay focused on the action.
+     */
+    //zdroj: https://stackoverflow.com/questions/17954220/2d-game-camera-logic
     private static void updateCamera() {
         double lowestBallY = 0;
 
@@ -197,6 +295,9 @@ public class Controller {
         }
     }
 
+    /**
+     * Creates the spawn circle obstacle at the predefined position.
+     */
     private static void createSpawnCircle() {
         int x = (int) Settings.CIRCLEX;
         int y = (int) Settings.CIRCLEY;
@@ -205,6 +306,12 @@ public class Controller {
         spawnCircle.add(roundObstacle);
     }
 
+
+    /**
+     * Creates pairs of left and right-facing triangle obstacles arranged vertically,
+     * and a central column of alternating up and down-facing triangle obstacles.
+     * This forms a symmetric and challenging obstacle layout.
+     */
     private static void createTriangles() {
         int height = Settings.TRIANGLE_HEIGHT;
         int width = Settings.TRIANGLE_WIDTH;
@@ -224,15 +331,12 @@ public class Controller {
             trianglesObstacles.add(triangleR);
         }
 
-
         int heightM = height / 2;
         width = 360;
         int startXM = (Settings.WORLD_WIDTH / 2) - (width / 2);
         int y = startY - (sideSpacing / 2) - heightM;
 
-
         int numberInMiddle = numberOfTriangles * 2 + 1;
-
 
         for (int i = 0; i < numberInMiddle; ) {
             TriangleObstacle upTriangle = new TriangleObstacle(startXM, y, width, heightM, TriangleObstacle.Direction.UP);
@@ -247,10 +351,13 @@ public class Controller {
             }
 
             y += sideSpacing + height - heightM;
-
         }
     }
 
+    /**
+     * Creates two rows of round fill obstacles consisting of large and small circles,
+     * arranged in a symmetric pattern for visual and gameplay variety.
+     */
     private static void createFillCircles() {
         int ballRadius = 40;
         int largeRadius = 95;
@@ -274,9 +381,21 @@ public class Controller {
 
         int bottomY = startY + rowSpacing;
         createRoundObstacleRow(bottomY, leftX, centerXBig, rightX, smallLeftX, smallRightX, largeRadius, smallRadius);
-
     }
 
+    /**
+     * Helper method that creates a single row of round obstacles composed of
+     * three large circles and two smaller circles below them.
+     *
+     * @param y           Y-coordinate for the large circles
+     * @param leftX       X-coordinate for the left large circle
+     * @param centerX     X-coordinate for the center large circle
+     * @param rightX      X-coordinate for the right large circle
+     * @param smallLeftX  X-coordinate for the left small circle
+     * @param smallRightX X-coordinate for the right small circle
+     * @param largeRadius Radius of the large round obstacles
+     * @param smallRadius Radius of the small round obstacles
+     */
     private static void createRoundObstacleRow(int y, int leftX, int centerX, int rightX, int smallLeftX, int smallRightX, int largeRadius, int smallRadius) {
         roundFillObstacles.add(new RoundObstacle(leftX, y, largeRadius));
         roundFillObstacles.add(new RoundObstacle(centerX, y, largeRadius));
@@ -288,6 +407,10 @@ public class Controller {
         roundFillObstacles.add(new RoundObstacle(smallRightX, smallY, smallRadius));
     }
 
+    /**
+     * Creates a grid of static edge obstacles (rectangles) arranged in multiple rows.
+     * Rows are staggered to create a honeycomb-like layout that adds complexity to navigation.
+     */
     private static void createEdgeObstacles() {
         int width = Settings.EDGE_OBSTACLES_WIDTH;
 
@@ -312,6 +435,11 @@ public class Controller {
         }
     }
 
+    /**
+     * Creates multiple spinning cross obstacles (two intersecting rectangles)
+     * on both sides of the screen, alternating spin direction and position by row.
+     * Each row contains one spinning cross on the left and one on the right.
+     */
     private static void createSpinningCrosses() {
         int windowWidth = Settings.WORLD_WIDTH;
 
@@ -353,6 +481,4 @@ public class Controller {
             spinningCrosses.add(new EdgeObstacle(rightX + (hWidth - vWidth) / 2, y - (vHeight - hHeight) / 2, vWidth, vHeight, rotatingDirection * rotatingSpeed));
         }
     }
-
-
 }

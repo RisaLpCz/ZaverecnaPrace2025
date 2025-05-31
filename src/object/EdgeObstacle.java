@@ -4,6 +4,10 @@ import controller.Settings;
 
 import java.util.ArrayList;
 
+/**
+ * Represents a rectangular obstacle that can move horizontally and rotate.
+ * It interacts with balls by detecting and handling collisions.
+ */
 public class EdgeObstacle extends WorldObject {
     private int width;
     private int height;
@@ -12,6 +16,12 @@ public class EdgeObstacle extends WorldObject {
     private int spawnX;
     private boolean movingRight = true;
 
+    /**
+     * Constructs an EdgeObstacle at the specified position with default width and height from settings.
+     *
+     * @param x the initial x-coordinate
+     * @param y the initial y-coordinate
+     */
     public EdgeObstacle(int x, int y) {
         super(x, y);
         setWidth(Settings.EDGE_OBSTACLES_WIDTH);
@@ -20,6 +30,15 @@ public class EdgeObstacle extends WorldObject {
         spawnX = x;
     }
 
+    /**
+     * Constructs an EdgeObstacle with specific dimensions and rotation speed.
+     *
+     * @param x the initial x-coordinate
+     * @param y the initial y-coordinate
+     * @param width the width of the obstacle
+     * @param height the height of the obstacle
+     * @param rotatingSpeed the speed of rotation in radians per update
+     */
     public EdgeObstacle(int x, int y, int width, int height, double rotatingSpeed) {
         super(x, y);
         setWidth(width);
@@ -28,8 +47,11 @@ public class EdgeObstacle extends WorldObject {
         setAngle(0.0);
     }
 
+    /**
+     * Moves the obstacle horizontally back and forth within a fixed offset range.
+     */
     public void moveRectangles() {
-        int maxOffset = 40;
+        int maxOffset = 50;
 
         if (isMovingRight()) {
             x += Settings.EDGE_OBSTACLES_MOVINGSPEED;
@@ -44,13 +66,13 @@ public class EdgeObstacle extends WorldObject {
         }
     }
 
-    public void rotate() {
-        angle += getRotatingSpeed();
-        if (angle > 2 * Math.PI) {
-            angle -= (2 * Math.PI);
-        }
-    }
-
+    /**
+     * Detects and resolves collisions between the obstacle and balls.
+     * Applies collision physics and adjusts balls' positions and velocities.
+     *
+     * @param ballList the list of balls to check for collision
+     */
+    //zdroj: https://medium.com/@dot32/circle-vs-rectangle-collision-30cfb74e7f3b
     public void collision(ArrayList<Ball> ballList) {
         for (Ball ball : ballList) {
             double ballX = ball.getX();
@@ -85,7 +107,6 @@ public class EdgeObstacle extends WorldObject {
                 ball.setX(ballX + nx * overlap);
                 ball.setY(ballY + ny * overlap);
 
-
                 double dot = ball.getVelocityX() * nx + ball.getVelocityY() * ny;
 
                 double projNormX = -dot * nx * 0.8;
@@ -99,14 +120,22 @@ public class EdgeObstacle extends WorldObject {
 
                 ball.setVelocityX(projNormX + slipX);
                 ball.setVelocityY(projNormY + slipY);
-
             }
         }
     }
 
+    /**
+     * Clamps a value between a minimum and maximum.
+     *
+     * @param value the value to clamp
+     * @param min the minimum limit
+     * @param max the maximum limit
+     * @return the clamped value
+     */
     private double close(double value, double min, double max) {
         return Math.max(min, Math.min(max, value));
     }
+
 
     public int getWidth() {
         return width;
