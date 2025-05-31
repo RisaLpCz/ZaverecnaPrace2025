@@ -75,7 +75,7 @@ public class Painter extends JPanel {
 
         for (RoundObstacle roundObstacle : Controller.roundFillObstacles) {
             int x = (int) roundObstacle.getX();
-            int y = (int) (roundObstacle.getY() - Settings.cameraOffsetY);
+            int y = (int) roundObstacle.getY();
             int radius = roundObstacle.getRadius();
 
             graphics.fillOval(x - radius, (int) (y - radius - Settings.cameraOffsetY), radius * 2, radius * 2);
@@ -85,20 +85,19 @@ public class Painter extends JPanel {
 
         for (EdgeObstacle edgeObstacle : Controller.edgeObstacles) {
             int x = (int) edgeObstacle.getX();
-            int y = (int) (edgeObstacle.getY() - Settings.cameraOffsetY);
+            int y = (int) edgeObstacle.getY();
             int width = edgeObstacle.getWidth();
             int height = edgeObstacle.getHeight();
-
-            graphics.fillRect(x, y, width, height);
+            graphics.fillRect(x, (int) (y - Settings.cameraOffsetY), width, height);
         }
 
         for (EdgeObstacle edgeObstacle : Controller.spinningCrosses) {
             int x = (int) edgeObstacle.getX();
-            int y = (int) (edgeObstacle.getY() - Settings.cameraOffsetY);
+            int y = (int) edgeObstacle.getY();
             int width = edgeObstacle.getWidth();
             int height = edgeObstacle.getHeight();
 
-            graphics.fillRect(x, y, width, height);
+            graphics.fillRect(x, (int) (y - Settings.cameraOffsetY), width, height);
         }
 
         ((Graphics2D) graphics).setStroke(new BasicStroke(2));
@@ -125,7 +124,7 @@ public class Painter extends JPanel {
 
             graphics.setColor(Color.BLACK);
             graphics.setFont(new Font("Arial", Font.BOLD, 20));
-            graphics.drawString(name + " " + number, x - radius,(int) (y - radius - Settings.cameraOffsetY) - 20);
+            graphics.drawString(name + " " + number, x - radius, (int) (y - radius - Settings.cameraOffsetY) - 20);
         }
     }
 }
